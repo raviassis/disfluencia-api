@@ -13,6 +13,7 @@ module.exports = {
         //Error Client
         BAD_REQUEST: 400,
         UNAUTHORIZED: 401,
+        NOT_FOUD: 404,
         UNPROCESSABLE_ENTITY: 422,
     },
 }
