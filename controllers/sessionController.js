@@ -12,8 +12,18 @@ module.exports =  class SessionController {
     }
 
     async get(req, resp, next) {
-        throw Error("Not implemented yet!");
-        const result = await this.sessionRepository.findOne({name: 'teste'});
-        resp.status(constants.HTTP_STATUS_CODES.OK).json(result);
+        const sessions = await this.sessionRepository.findMany();
+        resp.status(constants.HTTP_STATUS_CODES.OK).json(sessions);
+    }
+
+    async getById(req, resp, next) {
+        const id = req.params.id;
+        const resultExpect = await this.sessionRepository.findById(id);
+        if (resultExpect) {
+            resp.status(constants.HTTP_STATUS_CODES.OK).json(resultExpect);
+        }
+        else {
+            resp.sendStatus(constants.HTTP_STATUS_CODES.NOT_FOUD);
+        }        
     }
 }

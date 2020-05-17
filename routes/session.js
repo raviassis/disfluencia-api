@@ -8,6 +8,7 @@ const sessionController = di.resolve('sessionController');
 
 /* GET users listing. */
 router.get('/', sessionController.get.bind(sessionController))
-        .post('/', validator.validate(CreateSessionValidator), sessionController.create.bind(sessionController));
+        .post('/', validator.validate(CreateSessionValidator), sessionController.create.bind(sessionController))
+        .get('/:id', sessionController.getById.bind(sessionController));
 
 module.exports = router;

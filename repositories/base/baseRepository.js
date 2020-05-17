@@ -1,3 +1,4 @@
+const { ObjectID }= require('mongodb');
 module.exports =  class BaseRepository {
     constructor(collection, uri, dbClient) {        
         this.collection = collection;
@@ -6,13 +7,18 @@ module.exports =  class BaseRepository {
         this.options = {useUnifiedTopology: true};
     }
 
+    // Should be overrided to correctly mapping
+    _mapResultToModel(result) {
+        return result;
+    }
+
     async insertOne(obj) {
         const conection = await this.dbClient.connect(this.uri, this.options);
         const result = (await conection.db()
                         .collection(this.collection)
                         .insertOne(obj)).ops[0];
         conection.close();
-        return result;
+        return this._mapResultToModel(result);
     }
 
     async findOne(query) {
@@ -21,12 +27,27 @@ module.exports =  class BaseRepository {
                         .collection(this.collection)
                         .findOne(query);
         conection.close();
-        return result;
+        return this._mapResultToModel(result);
     }
 
     async createCollection(){
         const conection = await this.dbClient.connect(this.uri, this.options);
         await conection.db().createCollection(this.collection);
         conection.close();
+    }
+
+    async findMany(query) {
+        const conection = await this.dbClient.connect(this.uri, this.options);
+        const result =  await conection.db()
+                        .collection(this.collection)
+                        .find({})
+                        .toArray();
+        conection.close();
+        return result.map(this._mapResultToModel);
+    }
+
+    async findById(id) {
+        const _id = new ObjectID(id);
+        return await this.findOne({_id});
     }
 }
