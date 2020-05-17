@@ -1,10 +1,13 @@
 const SessionRepository = require('../../repositories/sessionRepository');
 const Session = require('../../models/session');
+const { when } =  require('jest-when');
+const { ObjectID }= require('mongodb');
 describe('SessionRepository', () => {
     const uriDb = 'url-to-database';
     let toArray;
     let findOne;
     let find;
+    let replaceOne;
     let collection;
     let close;
     let db;
@@ -16,7 +19,8 @@ describe('SessionRepository', () => {
         toArray = jest.fn();
         find = jest.fn().mockReturnValue({toArray});
         findOne = jest.fn();
-        collection = jest.fn().mockReturnValue({find, findOne});
+        replaceOne = jest.fn();
+        collection = jest.fn().mockReturnValue({find, findOne, replaceOne});
         close = jest.fn();
         db = jest.fn().mockReturnValue({collection});
         connect = jest.fn().mockReturnValue({db, close});
@@ -146,5 +150,42 @@ describe('SessionRepository', () => {
         findOne.mockReturnValue(null);
         const result = await sessionRepository.findById(id);
         expect(result).toBeFalsy();
+    });
+
+    it('Should update one session', async () => {
+        const session = new Session({
+            _id: '000000017b704e99b09e1fed',
+            name: 'nameSession',
+            speechSample: 'Session text',
+            annotation: 'example annotation',
+            transcription: {
+                intelligentSegment: 1,
+                therapistInterruption: 1,
+                hesitation: 1,
+                respite: 1,
+                block: 1,
+                extension: 1,
+                wordIntrusion: 1
+            }
+        });
+        const returnDb = { ops: [{
+                _id: '000000017b704e99b09e1fed',
+                name: 'nameSession',
+                speechSample: 'Session text',
+                annotation: 'example annotation',
+                transcription: {
+                    intelligentSegment: 1,
+                    therapistInterruption: 1,
+                    hesitation: 1,
+                    respite: 1,
+                    block: 1,
+                    extension: 1,
+                    wordIntrusion: 1
+                }
+            }]
+        };
+        when(replaceOne).calledWith({ _id: new ObjectID(session._id)}, session).mockReturnValue(returnDb);
+        const result = await sessionRepository.updateOne(session);
+        expect(result).toStrictEqual(session);
     });
 });

@@ -16,6 +16,7 @@ describe('SessionController', () => {
             insertOne: jest.fn(),
             findMany: jest.fn(),
             findById: jest.fn(),
+            updateOne: jest.fn(),
         };
         json = jest.fn();
         status = jest.fn().mockReturnValue({json});
@@ -152,6 +153,76 @@ describe('SessionController', () => {
 
         await controller.getById({params}, {status, sendStatus}, {});
 
+        expect(sendStatus).toHaveBeenCalledWith(constants.HTTP_STATUS_CODES.NOT_FOUD);
+        expect(status).not.toHaveBeenCalled();
+        expect(json).not.toHaveBeenCalled();
+    });
+
+    it('Should edit a session', async () => {
+        const body = {
+            _id: 'id',
+            name: 'nameSession',
+            speechSample: 'Session text',
+            annotation: 'example annotation',
+            transcription: {
+                intelligentSegment: 1,
+                therapistInterruption: 1,
+                hesitation: 1,
+                respite: 1,
+                block: 1,
+                extension: 1,
+                wordIntrusion: 1
+            }
+        };
+        const resultExpect = new Session({
+            _id: 'id',
+            name: 'nameSession',
+            speechSample: 'Session text',
+            annotation: 'example annotation',
+            transcription: {
+                intelligentSegment: 1,
+                therapistInterruption: 1,
+                hesitation: 1,
+                respite: 1,
+                block: 1,
+                extension: 1,
+                wordIntrusion: 1
+            }
+        });
+
+        const returnRepository = new Session({
+            _id: 'id',
+            name: 'nameSession old',
+            speechSample: 'Session text old',
+            annotation: 'example annotation old',
+            transcription: {
+                intelligentSegment: 1,
+                therapistInterruption: 1,
+                hesitation: 1,
+                respite: 1,
+                block: 1,
+                extension: 1,
+                wordIntrusion: 1
+            }
+        });
+
+        when(sessionRepository.findById).calledWith(body._id).mockReturnValue(returnRepository);
+        
+        when(sessionRepository.updateOne).calledWith(resultExpect).mockReturnValue(resultExpect);
+
+        await controller.edit({body}, {status}, {});
+
+        expect(status).toHaveBeenCalledWith(constants.HTTP_STATUS_CODES.CREATED);
+        expect(json).toHaveBeenCalledWith(resultExpect);
+    });
+
+    it('Should can\'t edit inexistent session', async () => {
+        const body = {
+            _id: 'inexistent id'
+        };
+
+        when(sessionRepository.findById).calledWith(body._id).mockReturnValue(null);
+        await controller.edit({body}, {status, sendStatus}, {});
         expect(sendStatus).toHaveBeenCalledWith(constants.HTTP_STATUS_CODES.NOT_FOUD);
         expect(status).not.toHaveBeenCalled();
         expect(json).not.toHaveBeenCalled();

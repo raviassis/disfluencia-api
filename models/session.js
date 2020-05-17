@@ -5,6 +5,6 @@ module.exports = class Session {
         this.name = name;
         this.speechSample = speechSample;
         this.annotation = annotation;
-        this.transcription = new Transcription(transcription);
+        this.transcription = transcription ? new Transcription(transcription): transcription;
     }
 }

@@ -26,4 +26,20 @@ module.exports =  class SessionController {
             resp.sendStatus(constants.HTTP_STATUS_CODES.NOT_FOUD);
         }        
     }
+
+    async edit(req, resp, next) {
+        const session = await this.sessionRepository.findById(req.body._id);
+        if (!session) {
+            return resp.sendStatus(constants.HTTP_STATUS_CODES.NOT_FOUD);
+        }
+        const newSession = new Session(req.body);
+        session.name = newSession.name;
+        session.speechSample = newSession.speechSample;
+        session.annotation = newSession.annotation;
+        session.transcription = newSession.transcription;
+        const result = await this.sessionRepository.updateOne(session);
+        if (result) {
+            return resp.status(constants.HTTP_STATUS_CODES.CREATED).json(result);
+        }
+    }
 }

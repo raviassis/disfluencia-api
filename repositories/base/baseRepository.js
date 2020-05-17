@@ -21,6 +21,14 @@ module.exports =  class BaseRepository {
         return this._mapResultToModel(result);
     }
 
+    async updateOne(obj) {
+        const conection = await this.dbClient.connect(this.uri, this.options);
+        const result = (await conection.db()
+                        .collection(this.collection)
+                        .replaceOne({ _id: new ObjectID(obj._id)}, obj)).ops[0];
+        return this._mapResultToModel(result);
+    }
+
     async findOne(query) {
         const conection = await this.dbClient.connect(this.uri, this.options);
         const result = await conection.db()
