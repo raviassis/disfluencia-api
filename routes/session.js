@@ -7,7 +7,7 @@ const di = require('../di');
 
 const sessionController = di.resolve('sessionController');
 
-/* GET users listing. */
+/* GET sessions listing. */
 router.get('/', sessionController.get.bind(sessionController))
         .post('/', validator.validate(CreateSessionValidator), sessionController.create.bind(sessionController))
         .get('/:id', sessionController.getById.bind(sessionController))
