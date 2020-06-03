@@ -33,6 +33,7 @@ module.exports =  class UserController {
             return resp.sendStatus(constants.HTTP_STATUS_CODES.NOT_FOUD);
         }
         const newUser = new User(req.body);
+        User.name = newUser.name;
         User.email = newUser.email;
         User.password = newUser.password;
         const result = await this.userRepository.updateOne(User);
