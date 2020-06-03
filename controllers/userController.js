@@ -41,4 +41,14 @@ module.exports =  class UserController {
             return resp.status(constants.HTTP_STATUS_CODES.CREATED).json(result);
         }
     }
+
+    async login(req, resp, next){
+        const Users = await this.userRepository.findMany();
+        const userFound = Users.find(u => u.email == req.body.email && u.password == req.body.password);
+        if(userFound){
+            resp.status(constants.HTTP_STATUS_CODES.OK).json(userFound);
+        }else{
+            resp.status(constants.HTTP_STATUS_CODES.NOT_FOUD);
+        }
+    }
 }

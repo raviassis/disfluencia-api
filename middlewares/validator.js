@@ -2,6 +2,7 @@ const constants = require('../constants');
 //validate body request
 exports.validate = (validator) => {
     return (req, res, next) => {
+        console.log(req)
         try {
             const validation = new validator(req.body).validate();
             if (!validation.valid) {

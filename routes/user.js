@@ -10,6 +10,7 @@ const userController = di.resolve('userController');
 router.get('/', userController.get.bind(userController))
         .post('/', validator.validate(CreateUserValidator), userController.create.bind(userController))
         .get('/:id', userController.getById.bind(userController))
-        .put('/', userController.edit.bind(userController));
+        .put('/', userController.edit.bind(userController))
+        .post('/login', userController.login.bind(userController))
 
 module.exports = router;
