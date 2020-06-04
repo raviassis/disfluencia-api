@@ -7,6 +7,12 @@ module.exports =  class UserController {
     }
 
     async create(req, resp, next) {
+        const email = req.body.email;
+        const emailAlreadyExists = await this.userRepository.findOne({email});
+        if(emailAlreadyExists){
+            return resp.status(constants.HTTP_STATUS_CODES.BAD_REQUEST)
+                .json({errors: [{message: 'Already exists a user with this email.'}]});
+        }
         const result = await this.userRepository.insertOne(new User(req.body));
         resp.status(constants.HTTP_STATUS_CODES.CREATED).json(result);
     }
@@ -43,12 +49,13 @@ module.exports =  class UserController {
     }
 
     async login(req, resp, next){
-        const Users = await this.userRepository.findMany();
-        const userFound = Users.find(u => u.email == req.body.email && u.password == req.body.password);
+        const {email, password} = req.body;
+        const userFound = await this.userRepository.findOne({email, password});
         if(userFound){
+            userFound.password = undefined;
             resp.status(constants.HTTP_STATUS_CODES.OK).json(userFound);
         }else{
-            resp.status(constants.HTTP_STATUS_CODES.NOT_FOUD);
+            resp.sendStatus(constants.HTTP_STATUS_CODES.NOT_FOUD);
         }
     }
 }
