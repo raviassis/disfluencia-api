@@ -48,7 +48,7 @@ module.exports =  class BaseRepository {
         const conection = await this.dbClient.connect(this.uri, this.options);
         const result =  await conection.db()
                         .collection(this.collection)
-                        .find({})
+                        .find(query)
                         .toArray();
         conection.close();
         return result.map(this._mapResultToModel);

@@ -2,17 +2,30 @@ const constants = require('../constants');
 const Session = require('../models/session');
 module.exports =  class SessionController {
 
-    constructor({sessionRepository}){
+    constructor({sessionRepository, userRepository}){
         this.sessionRepository = sessionRepository;
+        this.userRepository = userRepository;
     }
 
     async create(req, resp, next) {
+        const _idUser = req.body._idUser;
+        const user = await this.userRepository.findById(_idUser);
+        if(!user) {
+            return resp.sendStatus(constants.HTTP_STATUS_CODES.UNAUTHORIZED);
+        }
         const result = await this.sessionRepository.insertOne(new Session(req.body));
         resp.status(constants.HTTP_STATUS_CODES.CREATED).json(result);
     }
 
     async get(req, resp, next) {
-        const sessions = await this.sessionRepository.findMany();
+        const _idUser = req.query._idUser;
+        let sessions;
+        if (_idUser) {
+            sessions = await this.sessionRepository.findMany({_idUser});
+        } else {
+            sessions = await this.sessionRepository.findMany();
+        }
+        
         resp.status(constants.HTTP_STATUS_CODES.OK).json(sessions);
     }
 
