@@ -16,7 +16,7 @@ router
     sessionController.create.bind(sessionController)
   )
   .get('/:id', sessionController.getById.bind(sessionController))
-  .delete('/', sessionController.delete.bind(sessionController))
+  .delete('/:id', sessionController.delete.bind(sessionController))
   .put(
     '/',
     validator.validate(UpdateSessionValidator),
