@@ -54,7 +54,7 @@ module.exports = class SessionController {
     }
   }
   async delete(req, resp, next) {
-    const _id = req.body._id;
+    const _id = req.params.id;
     const result = await this.sessionRepository.deleteOne(_id);
     resp.status(constants.HTTP_STATUS_CODES.DELETED).json(result);
   }
