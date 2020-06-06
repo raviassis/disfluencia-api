@@ -8,9 +8,19 @@ const di = require('../di');
 const sessionController = di.resolve('sessionController');
 
 /* GET sessions listing. */
-router.get('/', sessionController.get.bind(sessionController))
-        .post('/', validator.validate(CreateSessionValidator), sessionController.create.bind(sessionController))
-        .get('/:id', sessionController.getById.bind(sessionController))
-        .put('/', validator.validate(UpdateSessionValidator), sessionController.edit.bind(sessionController));
+router
+  .get('/', sessionController.get.bind(sessionController))
+  .post(
+    '/',
+    validator.validate(CreateSessionValidator),
+    sessionController.create.bind(sessionController)
+  )
+  .get('/:id', sessionController.getById.bind(sessionController))
+  .delete('/', sessionController.delete.bind(sessionController))
+  .put(
+    '/',
+    validator.validate(UpdateSessionValidator),
+    sessionController.edit.bind(sessionController)
+  );
 
 module.exports = router;
